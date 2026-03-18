@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fellows Directory - AREF | Genomac Institute</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <nav class="nav">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark">
+        <img src="/Institute-Logo.png" alt="Genomac Institute Logo">
+      </div>
+      <div>
+        <div class="nav-logo-text">Genomac Institute inc.</div>
+        <div class="nav-logo-sub">AREF Network</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a><a href="about.html">About AREF</a><a href="fellows.html" class="active">Fellows</a>
+      <a href="research-tracks.html">Research Tracks</a><a href="network.html">Network & Events</a>
+      <a href="apply.html" class="apply">Apply</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-end"><button class="nav-btn" onclick="location.href='apply.html'">Apply to AREF</button></div>
+  </nav>
+
+  <section class="page-header">
+    <div class="page-header-inner">
+      <div class="page-eyebrow">
+        <div class="page-eyebrow-dot"></div>AREF Research Network
+      </div>
+      <h1>Meet Our <em>Research Fellows</em></h1>
+      <p>A selective community of academic supervisors advancing genomics, bioinformatics, and computational biology
+        research across institutions in Africa and the Global South.</p>
+    </div>
+  </section>
+
+  <div class="fellows-controls">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9990b8" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input type="text" id="search-input" placeholder="Search by name, institution, or research area…"
+        oninput="filterFellows()" />
+    </div>
+    <select class="filter-select" id="filter-location" onchange="filterFellows()">
+      <option value="">All Locations</option>
+      <option value="nigeria">Nigeria</option>
+      <option value="ghana">Ghana</option>
+      <option value="kenya">Kenya</option>
+      <option value="south africa">South Africa</option>
+      <option value="ethiopia">Ethiopia</option>
+      <option value="cameroon">Cameroon</option>
+    </select>
+    <select class="filter-select" id="filter-area" onchange="filterFellows()">
+      <option value="">All Research Areas</option>
+      <option value="pathogen genomics">Pathogen Genomics</option>
+      <option value="cancer genomics">Cancer Genomics</option>
+      <option value="microbiome">Microbiome Research</option>
+      <option value="computational biology">Computational Biology</option>
+      <option value="bioinformatics">Bioinformatics</option>
+    </select>
+    <div class="fellows-count" id="fellows-count"></div>
+  </div>
+
+  <div class="fellows-grid" id="fellows-grid"></div>
+
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModalDirect()">
+    <div class="modal" id="modal-content"></div>
+  </div>
+
+  <footer>
+    <div>
+      <div class="footer-logo-text">Genomac Institute Inc. — AREF</div>
+      <div class="footer-sub">Academic Research Enablement Framework · Genomics · Bioinformatics · Computational Biology
+      </div>
+    </div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="about.html">About</a><a
+        href="fellows.html">Fellows</a><a href="research-tracks.html">Research Tracks</a><a
+        href="network.html">Network</a><a href="apply.html">Apply</a></div>
+    <div class="footer-sub">Confidential — For AREF Research Fellows Only · © 2026</div>
+  </footer>
+
+  <script>
+    let ALL = [], filtered = [];
+
+    function initials(n) { return (n || '').split(' ').map(w => w[0] || '').slice(0, 2).join('').toUpperCase(); }
+
+    function avatarHtml(f, big) {
+      const cls = big ? 'm-avatar' : 'fellow-avatar';
+      const iCls = big ? 'm-avatar-i' : 'fellow-avatar-initials';
+      return `<div class="${cls}">${f.photoUrl ? `<img src="${f.photoUrl}" alt="${f.name}" onerror="this.parentElement.innerHTML='<span class=&quot;${iCls}&quot;>${initials(f.name)}</span>'" />` : `<span class="${iCls}">${initials(f.name)}</span>`}</div>`;
+    }
+
+    function renderCard(f) {
+      const tags = (f.tags || []).slice(0, 3).map(t => `<span class="ra-tag">${t}</span>`).join('');
+      return `<div class="fellow-card" onclick="openModal('${f.id}')">
+    <div class="fellow-card-top">${avatarHtml(f, false)}
+      <div><div class="fellow-name">${f.name}</div><div class="fellow-ftitle">${f.title || ''}</div>
+      <div class="fellow-top-badges"><span class="fellow-status"><span class="fellow-status-dot"></span>Active Fellow</span>${f.priority ? '<span class="priority-badge">Priority Fellow</span>' : ''}</div></div>
+    </div>
+    <div class="fellow-card-body">
+      <div class="fellow-meta">
+        <div class="fellow-meta-row"><svg class="fellow-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${f.institution || ''}</div>
+        <div class="fellow-meta-row"><svg class="fellow-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${f.location || ''}</div>
+      </div>
+      <div class="ra-box"><div class="ra-label">Research Track</div><div class="ra-title">${f.trackTitle || ''}</div><div class="ra-tags">${tags}</div></div>
+    </div>
+    <div class="fellow-footer"><span class="fellow-cycle">${f.cycle || ''}</span>
+      <button class="view-btn">View Profile <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>`;
+    }
+
+    function renderModal(f) {
+      const tags = (f.tags || []).map(t => `<span class="m-tag">${t}</span>`).join('');
+      const socials = [
+        f.linkedin ? `<a href="${f.linkedin}" target="_blank" class="social-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>` : '',
+        f.orcid ? `<a href="${f.orcid}" target="_blank" class="social-link"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>ORCID / Scholar</a>` : '',
+      ].filter(Boolean).join('');
+      return `<div class="modal-hdr">${avatarHtml(f, true)}
+    <div style="flex:1"><div class="m-name">${f.name}</div><div class="m-title">${f.title || ''}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;"><span class="fellow-status"><span class="fellow-status-dot"></span>Active Fellow</span>${f.priority ? '<span class="priority-badge">Priority Fellow</span>' : ''}<span style="background:rgba(200,151,61,0.22);border:1px solid rgba(200,151,61,0.3);border-radius:100px;padding:3px 10px;font-size:10px;color:var(--gold-light);">${f.cycle || ''}</span></div>
+    ${socials ? `<div class="social-links">${socials}</div>` : ''}</div>
+    <button class="m-close" onclick="closeModalDirect()">✕</button></div>
+  <div class="m-body">
+    <div class="m-sec">Fellow Details</div>
+    <div class="m-details">
+      <div class="m-detail"><div class="m-detail-l">Institution</div><div class="m-detail-v">${f.institution || '—'}</div></div>
+      <div class="m-detail"><div class="m-detail-l">Location</div><div class="m-detail-v">${f.location || '—'}</div></div>
+      <div class="m-detail"><div class="m-detail-l">Students Supervised</div><div class="m-detail-v">${f.students?.ug || 0} UG · ${f.students?.msc || 0} MSc · ${f.students?.phd || 0} PhD</div></div>
+      <div class="m-detail"><div class="m-detail-l">Publications</div><div class="m-detail-v">${f.publications || 0} outputs</div></div>
+    </div>
+    ${f.bio ? `<div class="m-sec">Research Biography</div><p class="m-bio">${f.bio}</p>` : ''}
+    <div class="m-sec">Research Track</div>
+    <div class="m-track"><div class="ra-label">Track Title</div><div style="font-size:15px;font-weight:500;color:var(--purple-800);margin-bottom:10px;">${f.trackTitle || '—'}</div><div class="m-tags">${tags}</div></div>
+  </div>`;
+    }
+
+    function filterFellows() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      const loc = document.getElementById('filter-location').value.toLowerCase();
+      const area = document.getElementById('filter-area').value.toLowerCase();
+      filtered = ALL.filter(f => {
+        const mQ = !q || f.name.toLowerCase().includes(q) || (f.institution || '').toLowerCase().includes(q) || (f.trackTitle || '').toLowerCase().includes(q) || (f.tags || []).some(t => t.toLowerCase().includes(q));
+        const mL = !loc || (f.country || '').toLowerCase() === loc;
+        const mA = !area || (f.area || '').toLowerCase().includes(area);
+        return mQ && mL && mA;
+      });
+      render();
+    }
+
+    function render() {
+      document.getElementById('fellows-count').textContent = `Showing ${filtered.length} fellow${filtered.length !== 1 ? 's' : ''}`;
+      document.getElementById('fellows-grid').innerHTML = filtered.length ? filtered.map(renderCard).join('') : '<div class="no-results"><h3>No fellows found</h3><p>Try adjusting your search or filters.</p></div>';
+    }
+
+    function openModal(id) {
+      const f = ALL.find(x => x.id === id);
+      if (!f) return;
+      document.getElementById('modal-content').innerHTML = renderModal(f);
+      document.getElementById('modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModalDirect() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
+
+    ALL = AREF.Fellows.all().filter(f => f.status === 'active');
+    filtered = [...ALL];
+    render();
+  </script>
+
+  <script>
+    // Mobile Menu Toggle
+    function toggleMobileNav() {
+      const toggle = document.getElementById('navToggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      toggle.classList.toggle('active');
+      navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+
+      if (window.innerWidth <= 768) {
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '60px';
+        navLinks.style.left = '0';
+        navLinks.style.right = '0';
+        navLinks.style.background = 'var(--purple-900)';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.borderTop = '1px solid rgba(255, 255, 255, 0.07)';
+        navLinks.style.padding = '0.5rem 0';
+        navLinks.style.zIndex = '199';
+      }
+    }
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        const toggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (window.innerWidth <= 768) {
+          toggle.classList.remove('active');
+          navLinks.classList.remove('open');
+        }
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      const navLinks = document.querySelector('.nav-links');
+      const toggle = document.getElementById('navToggle');
+      if (window.innerWidth > 768) {
+        navLinks.classList.remove('open');
+        toggle.classList.remove('active');
+      }
+    });
+
+    // Existing functions
+    function filterFellows() {
+      const searchInput = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+      const locationFilter = document.getElementById('filter-location') ? document.getElementById('filter-location').value.toLowerCase() : '';
+      const areaFilter = document.getElementById('filter-area') ? document.getElementById('filter-area').value.toLowerCase() : '';
+      const fellows = document.querySelectorAll('.fellow-card');
+      let visibleCount = 0;
+
+      fellows.forEach(fellow => {
+        const name = fellow.getAttribute('data-name') ? fellow.getAttribute('data-name').toLowerCase() : '';
+        const institution = fellow.getAttribute('data-institution') ? fellow.getAttribute('data-institution').toLowerCase() : '';
+        const area = fellow.getAttribute('data-area') ? fellow.getAttribute('data-area').toLowerCase() : '';
+        const location = fellow.getAttribute('data-location') ? fellow.getAttribute('data-location').toLowerCase() : '';
+
+        const matchesSearch = !searchInput || name.includes(searchInput) || institution.includes(searchInput) || area.includes(searchInput);
+        const matchesLocation = !locationFilter || location === locationFilter;
+        const matchesArea = !areaFilter || area === areaFilter;
+
+        if (matchesSearch && matchesLocation && matchesArea) {
+          fellow.style.display = 'block';
+          visibleCount++;
+        } else {
+          fellow.style.display = 'none';
+        }
+      });
+
+      const count = document.getElementById('fellows-count');
+      if (count) count.innerText = visibleCount + ' Fellows';
+    }
+  </script>
+</body>
+
+</html>
