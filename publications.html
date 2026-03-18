@@ -14,7 +14,15 @@
     </div><div><div class="nav-logo-text">Genomac Institute inc.</div><div class="nav-logo-sub">AREF Network</div></div></a>
   <div class="nav-links">
     <a href="index.html">Home</a><a href="about.html">About AREF</a><a href="fellows.html">Fellows</a>
-    <a href="research-tracks.html" class="active">Research Tracks</a><a href="network.html">Network & Events</a>
+    <div class="nav-dropdown">
+      <a href="research-tracks.html" class="active">Research Tracks</a>
+      <div class="nav-dropdown-menu">
+        <a href="research-tracks.html" class="nav-dropdown-link">Track Architecture</a>
+        <a href="projects.html" class="nav-dropdown-link">Ongoing Projects</a>
+        <a href="publications.html" class="nav-dropdown-link active">Research Publications</a>
+      </div>
+    </div>
+    <a href="network.html">Network & Events</a>
     <a href="apply.html" class="apply">Apply</a>
   </div>
   <button class="nav-toggle" id="navToggle" onclick="toggleMobileNav()">
@@ -42,9 +50,9 @@
 </div>
 
 <!-- STATS STRIP -->
-<div class="stats-strip" id="stats-strip">
+<!-- <div class="stats-strip" id="stats-strip">
   <div class="stats-strip-inner" id="stats-inner"></div>
-</div>
+</div> -->
 
 <div class="controls">
   <input type="text" class="search-input" id="search" placeholder="Search by title, authors, or journal…" oninput="filterPubs()" />
