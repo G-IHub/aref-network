@@ -320,6 +320,79 @@ body {
   color: #fff;
   background: rgba(107, 79, 212, 0.35);
 }
+
+/* Dropdown for Research Tracks sub-pages */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown > a {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: rgba(15, 10, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  min-width: 220px;
+  padding: 0.35rem 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 220;
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s;
+}
+
+.nav-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+  display: block;
+}
+
+.nav-dropdown-menu a.active {
+  background: rgba(107, 79, 212, 0.35);
+  color: #fff;
+}
+
+/* Ensure dropdown items are accessible on mobile */
+@media (max-width: 996px) {
+  .nav-dropdown-menu {
+    display: none;
+    position: static;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .nav-links.open .nav-dropdown-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-dropdown-menu a {
+    padding-left: 2.5rem;
+    background: transparent;
+  }
+}
+
 .nav-links .apply {
   display: none;
 }
@@ -3088,6 +3161,7 @@ footer {
 .stats-strip {
   background: var(--purple-900);
   padding: 2rem 4rem;
+  color: #fff;
 }
 .stats-strip-inner {
   max-width: 1100px;
